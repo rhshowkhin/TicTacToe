@@ -1,150 +1,119 @@
-//JS code goes here
-/*var turn = false;
+var turn =false;
+var winner=null;
+var counter=0;
+function setMessage(msg){
+  document.getElementById("Message").innerText=msg;
+}
+var xW=0;var xL=0;var oW=0;var oL=0;
+function finalResult(){
+  if(winner=="1"){
+    xW=xW+1;
+    oL=oL+1;
+    document.getElementById("won1").innerText=xW;
+    document.getElementById("lost2").innerText=oL;
+  }
+  else if(winner=="2"){
+    oW=oW+1;
+    xL=xL+1;
+    document.getElementById("won2").innerText=oW;
+    document.getElementById("lost1").innerText=xL;
+  }
+
+}
+var player;
+var var1;
 function play(event){
-  console.log(event);
-  event.target.innerHTML=turn? "0" : "X";
-  turn = !turn;
+
+  if(turn==false){
+    var1="X";
+  }
+  else {
+    var1="0";
+  }
+  setMessage("Game in progress");
+
+  if(winner!=null){
+    setMessage("Player "+winner+" already won.");
+  }
+  else {
+    console.log(event)
+    if(event.target.innerHTML==''){
+      event.target.innerHTML=turn?"0":"X";
+      counter=counter+1;
+      if(counter==9){
+        setMessage("Draw");
+
+      }
+    }
+    else {
+      if(counter==9){
+        setMessage("Draw");
+
+      }
+      else {
+        setMessage("pick another square.");
+        turn=!turn;
+      }
+
+    }
+    if(checkForWinner(var1)){
+
+       if(var1=="X"){player="1";
+       }
+       else {
+         player="2";
+       }
+       winner = player;
+       setMessage("Player "+player+ " Wins");
+       finalResult();
+
+     }
+     else {
+       turn=!turn;
+
+     }
+  }
+
+
 }
-*/
-
-var clicked = [
-false, false, false,
-false, false, false,
-false, false, false
-];
-
-var mark = [
-  0,0,0,0,0,0,0,0,0
-]
-var endGame = [
-	[0,1,2],
-	[3,4,5],
-	[6,7,8],
-  [0,3,6],
-  [1,4,7],
-  [2,5,8],
-	[0,4,8],
-	[2,4,6]
-];
-
-
-var turn = true;
-
-var gameOver = false;
-
-var p1wins=0;
-var p2wins=0;
-
-
-
-function play(event){
-	var element = event.target;
-
-	if ( clicked[element.id] === false && gameOver === false ) {
-
-    element.innerHTML = turn ? "X" : "O";
-    mark[element.id] = turn? 1 : 2;
-    clicked[element.id] = true;
-		turn = !turn;
-
-		console.log(clicked);
-    console.log(mark);
-
-
-		var result = checkEndGame();
-
-		if (result === 1) {
-      p1wins++;
-			console.log("Player 1 wins!");
-      document.getElementById('pi').innerHTML = p1wins;
-      document.getElementById('pone').innerHTML = p1wins;
-			document.getElementById('gstatus').innerHTML = "Player 1 wins!";
-			gameOver = true;
-      setTimeout(newGame, 2*1000);
-		}
-		if (result === 2) {
-      p2wins++;
-			console.log("Player 2 wins!");
-      document.getElementById('pii').innerHTML = p2wins;
-      document.getElementById('ptwo').innerHTML = p2wins;
-			document.getElementById('gstatus').innerHTML = "Player 2 wins!";
-			gameOver = true;
-      setTimeout(newGame, 2*1000);
-		}
-		if (result === 0) {
-			console.log("Tie");
-			document.getElementById('gstatus').innerHTML = "It's a Tie!";
-			gameOver = true;
-      setTimeout(newGame, 2*1000);
-		}
-		if (result === false) {
-			document.getElementById('gstatus').innerHTML = "Game in Progress";
-			console.log("Continue game");
-		}
-	}
+function checkRow(a, b, c, move){
+  var result = false;
+  if(getBox(a) == move && getBox(b) == move && getBox(c) ==move){
+    result = true;
+  }
+   return result;
 }
 
-function checkEndGame() {
-	for (var i = 0; i < endGame.length; i++) {
-		if (
-			clicked[endGame[i][0]] !== false &&
-			clicked[endGame[i][1]] !== false &&
-			clicked[endGame[i][2]] !== false
-		) {
-			if ( mark[endGame[i][0]] === mark[endGame[i][1]] && mark[endGame[i][1]] === mark[endGame[i][2]] ) {
-				if ( mark[endGame[i][0]] === 1) {
-
-					return 1;
-				}
-				if ( mark[endGame[i][0]] === 2) {
-
-					return 2;
-				}
-			}
-		}
-	}
-
-
-  var tie = true;
-	for (var i = 0; i < clicked.length; i++) {
-		if (clicked[i] === false) {
-      tie = false;
-      break;
-		}
-	}
-
-	if (tie === true) {
-		return 0;
-	}
-	return false;
+function getBox(number){
+  return document.getElementById(number).innerText;
+  setMessage("number");
 }
 
-function restart (event){
-	for(var i = 0; i < clicked.length; i++){
-		if( clicked[i] !== false ) {
-			document.getElementById(i).innerHTML = '';
-			clicked[i] = false;
-      mark[i] = 0;
-		}
-	}
-	turn = true;
-	gameOver = false;
-  p1wins = 0;
-  p2wins = 0;
-  document.getElementById('pi').innerHTML = p1wins;
-  document.getElementById('pone').innerHTML = p1wins;
-  document.getElementById('pii').innerHTML = p2wins;
-  document.getElementById('ptwo').innerHTML = p2wins;
-	document.getElementById("gstatus").innerHTML = "New Game";
+function checkForWinner(move){
+  var result= false;
+  if(checkRow(1,2,3,move)||
+    checkRow(4,5,6,move) ||
+    checkRow(7,8,9,move) ||
+    checkRow(1,4,7,move) ||
+    checkRow(2,5,8,move) ||
+    checkRow(3,6,9,move) ||
+    checkRow(1,5,9,move) ||
+    checkRow(3,5,7,move)){
+    result = true;
+  }
+  return result;
+}
+function restartGame(){
+  setMessage("New Game");
+  for(var i=1;i<=9;i++){
+    clearBox(i);
+  }
+  //finalResult();
+  turn=false;
+  winner=null;
+  counter=0;
 }
 
-function newGame (event){
-	for(var i = 0; i < clicked.length; i++){
-		document.getElementById(i).innerHTML = '';
-		clicked[i] = false;
-    mark[i] = 0;
-	}
-	turn = true;
-	gameOver = false;
-	document.getElementById("gstatus").innerHTML = "New Game";
+function clearBox(number){
+  return document.getElementById(number).innerText="";
 }
